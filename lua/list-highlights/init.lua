@@ -1,8 +1,8 @@
 local M = {}
 
 local function hl_classic()
-  -- local ls = vim.fn.synID(vim.fn.line("."), vim.fn.col("."), 1)
-  -- return { vim.fn.synIDattr(ls, "name"), vim.fn.synIDattr(vim.fn.synIDtrans(ls), "name") }
+  local ls = vim.fn.synID(vim.fn.line("."), vim.fn.col("."), 1)
+  local synstack = { vim.fn.synIDattr(ls, "name"), vim.fn.synIDattr(vim.fn.synIDtrans(ls), "name") }
   local function get_extmark_details_at(ns_id)
     local bufnr = vim.api.nvim_get_current_buf()
     local row = vim.fn.line(".") - 1
@@ -22,12 +22,10 @@ local function hl_classic()
           and row <= end_row
           and col <= end_col
       then
-        print(vim.inspect(extmark))
         table.insert(extmarks_match, extmark)
       end
     end
-    -- return extmarks_match
-    return vim.api.nvim_buf_get_extmarks(bufnr, ns_id, -1, 0, { details = 1, limit = 1 })
+    return extmarks_match
   end
   local namespaces = vim.api.nvim_get_namespaces()
   local hl_groups = {}
@@ -36,6 +34,9 @@ local function hl_classic()
     for _, extmark in ipairs(extmarks) do
       table.insert(hl_groups, extmark[4]["hl_group"])
     end
+  end
+  for _, group in ipairs(synstack) do
+    table.insert(hl_groups, group)
   end
   return hl_groups
 end
