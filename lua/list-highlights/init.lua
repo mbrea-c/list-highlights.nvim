@@ -10,10 +10,11 @@ local function hl_classic()
     local extmarks = vim.api.nvim_buf_get_extmarks(bufnr, ns_id, 0, -1, { details = 1 })
     local extmarks_match = {}
     for _, extmark in ipairs(extmarks) do
+      print(vim.inspect(extmark))
       local start_row = extmark[2]
       local start_col = extmark[3]
-      local end_row = extmark[4].end_row
-      local end_col = extmark[4].end_col
+      local end_row = extmark[4]["end_row"]
+      local end_col = extmark[4]["end_col"]
       if start_row <= row and start_col <= col and row <= end_row and col <= end_col then
         table.insert(extmarks_match, extmark)
       end
@@ -25,7 +26,6 @@ local function hl_classic()
   for _, ns_id in pairs(namespaces) do
     local extmarks = get_extmark_details_at(ns_id)
     for _, extmark in ipairs(extmarks) do
-      print(vim.inspect(extmark))
       table.insert(hl_groups, extmark[4]["hl_group"])
     end
   end
