@@ -17,8 +17,8 @@ local function hl_extmarks()
           and end_col ~= nil
           and start_row <= row
           and start_col <= col
-          and row <= end_row
-          and col <= end_col
+          and row <= end_row -- end_row is inclusive
+          and col < end_col -- end_col is exclusive
       then
         table.insert(extmarks_match, extmark)
       end
