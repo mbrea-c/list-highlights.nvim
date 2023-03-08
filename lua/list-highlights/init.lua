@@ -1,8 +1,24 @@
 local M = {}
 
 local function hl_classic()
-  local ls = vim.fn.synID(vim.fn.line("."), vim.fn.col("."), 1)
-  return { vim.fn.synIDattr(ls, "name"), vim.fn.synIDattr(vim.fn.synIDtrans(ls), "name") }
+  -- local ls = vim.fn.synID(vim.fn.line("."), vim.fn.col("."), 1)
+  -- return { vim.fn.synIDattr(ls, "name"), vim.fn.synIDattr(vim.fn.synIDtrans(ls), "name") }
+  local function get_extmark_details_at(ns_id)
+    local bufnr = vim.api.nvim_get_current_buf()
+    local row = vim.fn.line(".")
+    local col = vim.fn.col(".")
+    return vim.api.nvim_buf_get_extmarks(bufnr, ns_id, { row - 1, col - 1 }, { row, col }, { details = 1 })
+  end
+  local namespaces = vim.api.nvim_get_namespaces()
+  local hl_groups = {}
+  for _, ns_id in pairs(namespaces) do
+    local extmarks = get_extmark_details_at(ns_id)
+    for _, extmark in ipairs(extmarks) do
+      print(vim.inspect(extmark))
+      table.insert(hl_groups, extmark[4]["hl_group"])
+    end
+  end
+  return hl_groups
 end
 
 local function hl_treesitter()
