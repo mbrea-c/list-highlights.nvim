@@ -1,8 +1,6 @@
 local M = {}
 
-local function hl_classic()
-  local ls = vim.fn.synID(vim.fn.line("."), vim.fn.col("."), 1)
-  local synstack = { vim.fn.synIDattr(ls, "name"), vim.fn.synIDattr(vim.fn.synIDtrans(ls), "name") }
+local function hl_extmarks()
   local function get_extmark_details_at(ns_id)
     local bufnr = vim.api.nvim_get_current_buf()
     local row = vim.fn.line(".") - 1
@@ -35,10 +33,13 @@ local function hl_classic()
       table.insert(hl_groups, extmark[4]["hl_group"])
     end
   end
-  for _, group in ipairs(synstack) do
-    table.insert(hl_groups, group)
-  end
   return hl_groups
+end
+
+local function hl_synstack()
+  local ls = vim.fn.synID(vim.fn.line("."), vim.fn.col("."), 1)
+  local synstack = { vim.fn.synIDattr(ls, "name"), vim.fn.synIDattr(vim.fn.synIDtrans(ls), "name") }
+  return synstack
 end
 
 local function hl_treesitter()
@@ -48,7 +49,28 @@ end
 
 M.hl_groups_under_cursor = function()
   local ts_hl = hl_treesitter()
-  local cl_hl = hl_classic()
+  local cl_hl = hl_synstack()
+
+  local lines = {}
+  table.insert(lines, "# Treesitter")
+  for _, hl in ipairs(ts_hl) do
+    table.insert(lines, "- @" .. hl)
+  end
+  table.insert(lines, "# Classic")
+  for _, hl in ipairs(cl_hl) do
+    if hl ~= "" then
+      table.insert(lines, "- " .. hl)
+    end
+  end
+
+  local vsize = #lines + 1
+  local hsize = 0
+  for _, line in ipairs(lines) do
+    if string.len(line) > hsize then
+      hsize = string.len(line)
+    end
+  end
+  hsize = hsize + 1
 
   local Popup = require("nui.popup")
   local autocmd = require("nui.utils.autocmd")
@@ -63,8 +85,8 @@ M.hl_groups_under_cursor = function()
     },
     position = 0,
     size = {
-      width = 20,
-      height = "10%",
+      width = hsize,
+      height = vsize,
     },
   })
 
@@ -83,17 +105,6 @@ M.hl_groups_under_cursor = function()
   end)
 
   -- set content
-  local lines = {}
-  table.insert(lines, "# Treesitter")
-  for _, hl in ipairs(ts_hl) do
-    table.insert(lines, "- @" .. hl)
-  end
-  table.insert(lines, "# Classic")
-  for _, hl in ipairs(cl_hl) do
-    if hl ~= "" then
-      table.insert(lines, "- " .. hl)
-    end
-  end
   vim.api.nvim_buf_set_lines(popup.bufnr, 0, 1, false, lines)
 end
 
