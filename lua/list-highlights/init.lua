@@ -7,7 +7,7 @@ local function hl_classic()
     local bufnr = vim.api.nvim_get_current_buf()
     local row = vim.fn.line(".")
     local col = vim.fn.col(".")
-    return vim.api.nvim_buf_get_extmarks(bufnr, ns_id, { row - 1, col - 1 }, { row, col }, { details = 1 })
+    return vim.api.nvim_buf_get_extmarks(bufnr, ns_id, { row - 1, col - 1 }, { row - 1, col - 1 }, { details = 1 })
   end
   local namespaces = vim.api.nvim_get_namespaces()
   local hl_groups = {}
