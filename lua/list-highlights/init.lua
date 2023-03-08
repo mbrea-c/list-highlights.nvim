@@ -10,16 +10,24 @@ local function hl_classic()
     local extmarks = vim.api.nvim_buf_get_extmarks(bufnr, ns_id, 0, -1, { details = 1 })
     local extmarks_match = {}
     for _, extmark in ipairs(extmarks) do
-      print(vim.inspect(extmark))
       local start_row = extmark[2]
       local start_col = extmark[3]
       local end_row = extmark[4]["end_row"]
       local end_col = extmark[4]["end_col"]
-      if start_row <= row and start_col <= col and row <= end_row and col <= end_col then
+      if
+          end_row ~= nil
+          and end_col ~= nil
+          and start_row <= row
+          and start_col <= col
+          and row <= end_row
+          and col <= end_col
+      then
+        print(vim.inspect(extmark))
         table.insert(extmarks_match, extmark)
       end
     end
-    return extmarks_match
+    -- return extmarks_match
+    return vim.api.nvim_buf_get_extmarks(bufnr, ns_id, -1, 0, { details = 1, limit = 1 })
   end
   local namespaces = vim.api.nvim_get_namespaces()
   local hl_groups = {}
