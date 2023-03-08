@@ -27,7 +27,7 @@ M.hl_groups_under_cursor = function()
     },
     position = 0,
     size = {
-      width = "10%",
+      width = 20,
       height = "10%",
     },
   })
