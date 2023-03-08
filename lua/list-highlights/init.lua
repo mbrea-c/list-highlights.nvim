@@ -49,28 +49,34 @@ end
 
 M.hl_groups_under_cursor = function()
   local ts_hl = hl_treesitter()
-  local cl_hl = hl_synstack()
+  local ss_hl = hl_synstack()
+  local ex_hl = hl_extmarks()
 
   local lines = {}
   table.insert(lines, "# Treesitter")
   for _, hl in ipairs(ts_hl) do
     table.insert(lines, "- @" .. hl)
   end
-  table.insert(lines, "# Classic")
-  for _, hl in ipairs(cl_hl) do
+  table.insert(lines, "# Extmarks")
+  for _, hl in ipairs(ex_hl) do
+    if hl ~= "" then
+      table.insert(lines, "- " .. hl)
+    end
+  end
+  table.insert(lines, "# Synstack")
+  for _, hl in ipairs(ss_hl) do
     if hl ~= "" then
       table.insert(lines, "- " .. hl)
     end
   end
 
-  local vsize = #lines + 1
+  local vsize = #lines
   local hsize = 0
   for _, line in ipairs(lines) do
     if string.len(line) > hsize then
       hsize = string.len(line)
     end
   end
-  hsize = hsize + 1
 
   local Popup = require("nui.popup")
   local autocmd = require("nui.utils.autocmd")
